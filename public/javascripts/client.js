@@ -5,6 +5,12 @@
             
             isClicked: false,
             
+            isLogined: false,
+            
+            disabled: function() {
+                return false;
+            },
+            
             init: function() {
                 var me = this;
                 $.ajax({
@@ -17,10 +23,59 @@
                         me.rendSelect(data);
                     }
                  });
+                 me.beforeLogin();
             },
             
             bindEvent: function () {
                 var me = this;
+               
+                //点击主页提示登录按钮
+                 $("#tipBtn").click(function(e) {
+                     e.preventDefault();
+                     var val = $(this).find("span").html();
+                     if(val === "登录") {
+                         $("#loginBox").modal("show");
+                     } else {
+                         $(this).find("span").html("登录");
+                     }
+                     me.beforeLogin();
+                 });
+                 
+                 //点击登录按钮登录
+                 $("#login").click(function(e){
+                    e.preventDefault();
+                     //防止重复点击
+                    if(me.isLogined){
+                        return false;
+                    }
+                    if(!me.loginValidate()) {
+                        $("#loginAlert").html("输入有误,只能输入字母和数字！");
+                        $("#loginAlert").show();
+                        return false;
+                    };
+                    
+                    me.isLogined = true;
+                    $(this).addClass("disabled");
+                    $(this).html("loading...");
+                    
+                    var query = "username=" + $("#username").val()
+                              + "&password=" + $("#password").val();
+                    $.ajax({
+                        type:'POST',
+                        url: '/login',
+                        data: query,
+                        success: function(data) {
+                            if(data.success) {
+                                me.afterLogin(data.message.username);
+                            } else {
+                                $("#loginAlert").html("用户名或密码错误！");
+                                $("#inputAlert").show();
+                            }
+                            me.isLogined = false;
+                        }
+                    });
+                 });
+                 
                 //点击一键下拉中的选择按钮
                  $("#oneKeyBlock .dropdown-menu").on("click", "li", function(e) {
                      e.preventDefault();
@@ -49,15 +104,15 @@
                      //改变table的显示状态
                      me.changeTableType(newKeyType);
                  });
-                  //点击一键后的操作
+                //点击一键后的操作
                  $("#oneKey").click(function(e) {
                     e.preventDefault();
                     
                     //防止重复点击
                     if(me.isClicked){
-                        return;
+                        return false;
                     }
-                    if(!me.isRightValue()) {
+                    if(!me.validate()) {
                         $("#inputAlert").removeClass("hidden");
                         $("#inputAlert").show();
                         return false;
@@ -99,9 +154,18 @@
                 });
             },
             
-            isRightValue: function() {
+            validate: function() {
                 var val = $("#cash").val();
-                if(/\D/.test(val)) {
+                if(!val || /\D/.test(val)) {
+                    return false;
+                }
+                return true;
+            },
+            
+            loginValidate: function() {
+                var username = $("#username").val(),
+                    password = $("#password").val();
+                if(!username || /\W/.test(username) || !password || /\W/.test(password)) {
                     return false;
                 }
                 return true;
@@ -239,8 +303,34 @@
                       '<td>' + item.time + '</td>' +
                    '</tr>';
                 return row;
-            }
+            },
             
+            beforeLogin: function() {
+                var me = this;
+                this.isClicked = true;
+                $("#oneKey").addClass("disabled");
+                $("#oneKey").next().addClass("disabled");
+                $("#oneKey").next().on("click",me.disabled);
+                $("#oneKey").html("请先登录");
+                $("#welcome").html("你好，访客！");;
+                $("#loginAlert").hide();
+            },
+            
+            afterLogin: function(username) {
+                var me = this;
+                this.isClicked = false;
+                $("#oneKey").removeClass("disabled");
+                $("#oneKey").next().removeClass("disabled");
+                $("#oneKey").next().off("click", me.disabled);
+                $("#oneKey").html("一键AA");
+                $("#welcome").html("你好，" + username + "！");;
+                $("#loginAlert").hide();
+
+                $("#tipBtn span").html("登出");
+                $("#login").html("登录");
+                $("#login").removeClass("disabled");
+                $("#loginBox").modal("hide");
+            }
         };
         
         Client.init();

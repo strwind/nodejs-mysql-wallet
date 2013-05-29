@@ -18,6 +18,9 @@ var obj = {
       // "time": "1369665569102"
     }
 };
+
+
+//为消费或充值的正数 添加加号
 function getFormatResult(result) {
     var data = [];
     result.forEach(function(item, index) {
@@ -29,7 +32,10 @@ function getFormatResult(result) {
     return data;
 }
 
-function getFootResult(result, payerId, type) {
+/*
+ * 获取总额的值
+ */
+function getFootResult(result, idArr, payerId, type) {
     var foot = {
         name: "总额",
         consume: 0,
@@ -40,19 +46,33 @@ function getFootResult(result, payerId, type) {
         var consume = parseFloat(item.consume),
             remain = parseFloat(item.remain);
             time = item.time;
-        foot.consume += consume;
+        //如果不是全部人扣款的情况
+        if (idArr) {
+            idArr.forEach(function(m, i) {
+                if(m == item.id) {
+                    foot.consume += consume;
+                }
+            });
+        } else {
+            foot.consume += consume;
+        }
         foot.remain += remain;
         foot.time = time;
     });
-    
+    //正数添加加号
     if(foot.consume > 0) {
         foot.consume = "+" + foot.consume;
-    }
+    } 
     
+    //如果是充值模式下 总额消费信息 、时间信息应该和充值的人保持一致
     if(payerId && type === 2) {
         var index = getIndexFromListById(result, payerId);
         foot.consume = "+" + parseFloat(result[index].consume);
         foot.time = result[index].time;
+    }
+    //保留一位小数
+    if(/\./.test(foot.consume.toString())){
+        foot.consume = parseFloat(foot.consume).toFixed(1);
     }
     if(/\./.test(foot.remain.toString())){
         foot.remain = foot.remain.toFixed(1);
@@ -60,6 +80,7 @@ function getFootResult(result, payerId, type) {
     return foot;
 }
 
+//根据对象ID从list数组中获取对象的序号
 function getIndexFromListById(list, id) {
     var me = this,
         index = null;
@@ -81,7 +102,6 @@ exports.get = function(req, res){
     Finnace.get(query, function(err, data) {
         obj.result = getFormatResult(data);
         obj.footResult = getFootResult(data);
-       
         res.send(obj);
     })
 };
@@ -134,10 +154,11 @@ exports.post = function(req, res){
         Finnace.get(null, function(err, data) {
             console.log("数据返回成功");
             obj.result = getFormatResult(data);
-            obj.footResult = getFootResult(data, payerId, type);
+            obj.footResult = getFootResult(data, idArr, payerId, type);
             obj.message.type = type;
             obj.message.payerId = payerId;
             
+            //当为付款模式时，对付款人和总额做双显示处理
             if(type === 1) {
                 //充值人在返回数据中的顺序
                 var payerIndex = getIndexFromListById(data, payerId);

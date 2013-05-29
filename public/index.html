@@ -10,6 +10,19 @@
     <link href="stylesheets/style.css" rel="stylesheet" media="screen" />
   </head>
   <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <div id="tipBtn" class="btn-group">
+              <a class="btn btn-primary" href="#">
+                  <i class="icon-user icon-white"></i>
+                  <span>登录</span>
+              </a>
+          </div>
+          <span id="welcome" class="pull-right welcome">你好，访客！</span>
+        </div>
+      </div>
+    </div>
     <div class="container">
       <div class="row-fluid">
         <form id="onKeyControll" class="form-child-center">
@@ -35,7 +48,7 @@
           </div>
           <div id="inputAlert" class="alert hidden">
               <button type="button" class="close" data-dismiss="alert">&times;</button>
-              <strong>Warning!</strong> 输入有误,只能输入正整数！
+              <strong>Warning!</strong> 输入为空或输入有误,只能输入正整数！
           </div>
         </form>
       </div>
@@ -65,7 +78,24 @@
          <p>&copy; Company 2013</p>
       </footer>
     </div> <!-- /container -->
-
+    
+    <!-- 登录框 -->
+    <div id="loginBox" class="modal hide fade loginBox">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 class="form-signin-heading">请登录</h3>
+      </div>
+      <form class="form-signin">
+        <input id="username" type="text" class="input-block-level" placeholder="用户名">
+        <input id="password" type="password" class="input-block-level" placeholder="密码">
+        <div id="loginAlert" class="alert alert-error">
+              输入有误,只能输入字母和数字！
+         </div>
+        <button id="login" class="btn btn-large btn-primary" type="submit">登录</button>
+      </form>
+    </div>
+    
+    
     <script src="javascripts/jquery-1.9.1.js"></script>
     <script src="javascripts/bootstrap.js"></script>
     <script src="javascripts/client.js"></script>
