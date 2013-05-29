@@ -11,44 +11,55 @@
   </head>
   <body>
     <div class="container">
-      <div class=""> <!--hero-unit-->
-          <div class="row-fluid">
-            <form id="onKeyControll" class="form-child-center">
-              <div class="input-prepend input-append">
-                <span class="add-on">¥</span>
-                <input id="cash"  type="text" class="input-xlarge"/>
-                <div class="btn-group">
-                    <button id="oneKey" type="submit" data-type="1" 
-                    class="btn btn-primary oneKey" >一键AA</button>
-                    <button class="btn dropdown-toggle btn-primary" data-toggle="dropdown">
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a data-type="2" href="">一键充值</a></li>
-                    </ul>
-                </div>
-              </div>
-            </form>
+      <div class="row-fluid">
+        <form id="onKeyControll" class="form-child-center">
+          <div id="payerBlock" class="input-prepend input-append">
+              <span class="add-on">付款人：</span>
+              <select id="payer" class="w150">
+                  
+              </select>
           </div>
+          <div id="oneKeyBlock" class="input-prepend input-append">
+            <span class="add-on">付款总额(¥)：</span>
+            <input id="cash"  type="text" class="input-small"/>
+            <div class="btn-group" title="进行操作">
+                <button id="oneKey" type="submit" data-type="1" 
+                class="btn btn-primary oneKey" >一键AA</button>
+                <button class="btn dropdown-toggle btn-primary" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a data-type="2" href="">一键充值</a></li>
+                </ul>
+            </div>
+          </div>
+          <div id="inputAlert" class="alert hidden">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              <strong>Warning!</strong> 输入有误,只能输入正整数！
+          </div>
+        </form>
+      </div>
 
-          <div id="table" class="row-fluid ">
-             <table class="table table-striped">
-                  <caption class="caption well">
-                       <h4>DAN饭团账单明细</h4>
-                  </caption>
-                  <thead>
-                    <tr>
-                      <th>姓名</th>
-                      <th >消费(-)/充值(+)</th>
-                      <th>饭团余额</th>
-                      <th>更新日期</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    
-                  </tbody>
-                </table>
-          </div>
+      <div id="table" class="row-fluid ">
+         <table class="table table-hover">
+              <caption class="caption well">
+                   <h4>DAN饭团账单明细</h4>
+              </caption>
+              <thead>
+                <tr>
+                  <th>姓名</th>
+                  <th>充值(+)/消费(-)</th>
+                  <th>饭团余额</th>
+                  <th>更新日期</th>
+                </tr>
+              </thead>
+              <tbody>
+                
+              </tbody>
+              <tfoot>
+                  
+              </tfoot>
+            </table>
       </div>
       <footer>
          <p>&copy; Company 2013</p>

@@ -10,3 +10,12 @@ body {
 .oneKey {
     width:80px;
 }
+
+.table tfoot tr.success > td{
+    background-color: #dff0d8;
+    font-weight: bold;
+}
+
+.w150{
+    width:150px;
+}
