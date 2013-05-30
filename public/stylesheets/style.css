@@ -7,7 +7,7 @@ body {
     text-align:center;
 }
 
-.oneKey {
+.changeMode, .oneKey {
     width:80px;
 }
 

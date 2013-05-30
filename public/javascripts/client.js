@@ -7,9 +7,7 @@
             
             isLogined: false,
             
-            disabled: function() {
-                return false;
-            },
+            disabled: function(){return false;},
             
             init: function() {
                 var me = this;
@@ -35,10 +33,19 @@
                      var val = $(this).find("span").html();
                      if(val === "登录") {
                          $("#loginBox").modal("show");
+                         me.beforeLogin();
                      } else {
-                         $(this).find("span").html("登录");
+                         $.ajax({
+                            type:'POST',
+                            url: '/logout',
+                            success: function(data) {
+                                if(data.success) {
+                                     $("#tipBtn").find("span").html("登录");
+                                     me.beforeLogin();
+                                }
+                            }
+                         });
                      }
-                     me.beforeLogin();
                  });
                  
                  //点击登录按钮登录
@@ -68,19 +75,23 @@
                             if(data.success) {
                                 me.afterLogin(data.message.username);
                             } else {
+                                $("#login").html("登录");
+                                $("#login").removeClass("disabled");
                                 $("#loginAlert").html("用户名或密码错误！");
-                                $("#inputAlert").show();
+                                $("#loginAlert").show();
                             }
                             me.isLogined = false;
                         }
                     });
                  });
                  
+                //点击选择按钮
+                $("#changeMode").click(function(e) { e.preventDefault(); });
                 //点击一键下拉中的选择按钮
-                 $("#oneKeyBlock .dropdown-menu").on("click", "li", function(e) {
+                 $("#payerBlock .dropdown-menu").on("click", "li", function(e) {
                      e.preventDefault();
                      //交换data-type值和文字
-                     var nowKey = $("#oneKey"),
+                     var nowKey = $("#changeMode"),
                          newKey = $(this).children(),
                          nowKeyText = nowKey.html(),
                          nowKeyType = nowKey.attr("data-type"),
@@ -92,11 +103,15 @@
                      newKey.attr("data-type", nowKeyType);
                      //交换引起的联动
                      if(newKeyType == 1) {
-                         $("#payerBlock>span").html("付款人：");
-                         $("#oneKeyBlock>span").html("付款总额(¥)：");
+                         $("#payerLabel").html("付款人：");
+                         $("#cashLabel").html("付款总额(¥)：");
+                         $("#oneKey").html("一键AA");
+                         $("#oneKey").attr("data-type", "1");
                      } else {
-                         $("#payerBlock>span").html("充值人：");
-                         $("#oneKeyBlock>span").html("充值额度(¥)：");
+                         $("#payerLabel").html("充值人：");
+                         $("#cashLabel").html("充值额度(¥)：");
+                         $("#oneKey").html("一键充值");
+                         $("#oneKey").attr("data-type", "2")
                      }
                      
                      //清空输入框
@@ -147,7 +162,6 @@
                             //释放按钮的状态
                             me.isClicked = false;
                             $("#oneKey").removeClass("disabled");
-                            $("#oneKey").next().removeClass("disabled");
                             $("#oneKey").html(oldText);
                         }
                     });
@@ -308,9 +322,10 @@
             beforeLogin: function() {
                 var me = this;
                 this.isClicked = true;
+                $("#changeMode").addClass("disabled");
+                $("#changeMode").next().addClass("disabled");
+                $("#changeMode").next().on("click", me.disabled);
                 $("#oneKey").addClass("disabled");
-                $("#oneKey").next().addClass("disabled");
-                $("#oneKey").next().on("click",me.disabled);
                 $("#oneKey").html("请先登录");
                 $("#welcome").html("你好，访客！");;
                 $("#loginAlert").hide();
@@ -319,9 +334,10 @@
             afterLogin: function(username) {
                 var me = this;
                 this.isClicked = false;
+                $("#changeMode").removeClass("disabled");
+                $("#changeMode").next().removeClass("disabled");
+                $("#changeMode").next().off("click", me.disabled);
                 $("#oneKey").removeClass("disabled");
-                $("#oneKey").next().removeClass("disabled");
-                $("#oneKey").next().off("click", me.disabled);
                 $("#oneKey").html("一键AA");
                 $("#welcome").html("你好，" + username + "！");;
                 $("#loginAlert").hide();

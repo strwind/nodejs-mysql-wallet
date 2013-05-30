@@ -8,6 +8,7 @@ var obj = {
     message: {
         type: 1,
         payerId: null,
+        username: null,
         error: ''
     },
     result: [],
@@ -107,6 +108,13 @@ exports.get = function(req, res){
 };
 
 exports.post = function(req, res){
+    
+    if(! req.session.username) {
+        obj.success = false;
+        obj.message.error = "请登录后操作！"
+        res.send(obj);
+    }
+    
     var idArr = req.body.idArr,
         remainArr = req.body.remainArr,
         type =        parseInt(req.body.type),
@@ -115,7 +123,7 @@ exports.post = function(req, res){
         payerRemain = parseFloat(req.body.payerRemain);
     idArr = idArr ? idArr.split(",") : [];
     remainArr = remainArr ? remainArr.split(",") : [];
-     var len = idArr.length;
+    var len = idArr.length;
     //充值模式
     var options = {
         'id' : payerId,
@@ -157,6 +165,7 @@ exports.post = function(req, res){
             obj.footResult = getFootResult(data, idArr, payerId, type);
             obj.message.type = type;
             obj.message.payerId = payerId;
+            obj.message.username = req.session.username;
             
             //当为付款模式时，对付款人和总额做双显示处理
             if(type === 1) {

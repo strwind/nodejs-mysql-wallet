@@ -27,32 +27,32 @@
       <div class="row-fluid">
         <form id="onKeyControll" class="form-child-center">
           <div id="payerBlock" class="input-prepend input-append">
-              <span class="add-on">付款人：</span>
+              <div class="btn-group" title="进行操作">
+                <button id="changeMode" type="submit" data-type="1" 
+                class="btn changeMode" >AA付账</button>
+                <button class="btn dropdown-toggle " data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a data-type="2" href="">单人充值</a></li>
+                </ul>
+              </div>
+              <span id="payerLabel" class="add-on">付款人：</span>
               <select id="payer" class="w150">
                   
               </select>
           </div>
           <div id="oneKeyBlock" class="input-prepend input-append">
-            <span class="add-on">付款总额(¥)：</span>
+            <span id="cashLabel" class="add-on">付款总额(¥)：</span>
             <input id="cash"  type="text" class="input-small"/>
-            <div class="btn-group" title="进行操作">
                 <button id="oneKey" type="submit" data-type="1" 
                 class="btn btn-primary oneKey" >一键AA</button>
-                <button class="btn dropdown-toggle btn-primary" data-toggle="dropdown">
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a data-type="2" href="">一键充值</a></li>
-                </ul>
             </div>
-          </div>
           <div id="inputAlert" class="alert hidden">
-              <button type="button" class="close" data-dismiss="alert">&times;</button>
               <strong>Warning!</strong> 输入为空或输入有误,只能输入正整数！
           </div>
         </form>
       </div>
-
       <div id="table" class="row-fluid ">
          <table class="table table-hover">
               <caption class="caption well">
