@@ -33,6 +33,7 @@
                      var val = $(this).find("span").html();
                      if(val === "登录") {
                          $("#loginBox").modal("show");
+                         $("#username").focus();
                          me.beforeLogin();
                      } else {
                          $.ajax({

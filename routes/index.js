@@ -3,6 +3,8 @@
  * GET home page.
  */
 var Finnace = require("../models/finance");
+var Single = require("../models/single");
+
 var obj = {
     success: true,
     message: {
@@ -94,6 +96,28 @@ function getIndexFromListById(list, id) {
     return index;
 }
 
+//根据Id获取username
+function getUsernameById(id) {
+    var map = {
+        '1' : 'maoquan',
+        '2' : 'zhoulianjie',
+        '3' : 'lisijin',
+        '4' : 'yaofeifei'
+    };
+    return map[id.toString()];
+}
+
+//保存历史记录
+function saveHistory(username, options) {
+    
+    Single.insert(username, options, function(err) {
+        if(err) {
+            throw err;
+        }
+        console.log("保存" + username + "个人历史成功");
+    });
+}
+
 exports.index = function(req, res){
   res.render('index', { title: 'Express' });
 };
@@ -134,10 +158,23 @@ exports.post = function(req, res){
     Finnace.update(options, function(err) {
         if(err) {
         }
-        remainArr[payerId - 1] = options.remain;
         console.log(payerId + "充值成功");
+        
+        //写入充值人的历史记录
+        var addUsername = getUsernameById(payerId);
+        var addOptions = {
+            'consume': options.consume,
+            'remain': options.remain,
+            'date': new Date(),
+            'remark': '充值'
+        };
+        
+        saveHistory (addUsername, addOptions);
+        
+        
         //消费模式
         if(type === 1) {
+            remainArr[payerId - 1] = options.remain;
             idArr.forEach(function(id, index) {
                 var id = parseInt(id);
                 var remain = parseInt(remainArr[index]);
@@ -153,6 +190,16 @@ exports.post = function(req, res){
                     if(err) {
                     }
                     console.log(id + "扣款成功");
+                    
+                        var minusUsername = getUsernameById(id);
+                        var minusOptions = {
+                            'consume': options.consume,
+                            'remain': options.remain,
+                            'date': new Date(),
+                            'remark': '扣款'
+                        };
+                        
+                        saveHistory (minusUsername, minusOptions);
                 })
             });
         }
