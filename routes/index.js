@@ -5,6 +5,11 @@
 var Finnace = require("../models/finance");
 var Single = require("../models/single");
 
+//全局维护一个用户id和username的映射对象
+var userMap = {};
+
+
+//返回的数据格式
 var obj = {
     success: true,
     message: {
@@ -96,15 +101,11 @@ function getIndexFromListById(list, id) {
     return index;
 }
 
-//根据Id获取username
-function getUsernameById(id) {
-    var map = {
-        '1' : 'maoquan',
-        '2' : 'zhoulianjie',
-        '3' : 'lisijin',
-        '4' : 'yaofeifei'
-    };
-    return map[id.toString()];
+//设置userMap
+function setUserMap(data) {
+    data.forEach(function(item, index) {
+        userMap[item.id] = item.username;
+    });
 }
 
 //保存历史记录
@@ -127,6 +128,8 @@ exports.get = function(req, res){
     Finnace.get(query, function(err, data) {
         obj.result = getFormatResult(data);
         obj.footResult = getFootResult(data);
+        //更新全局用户id和username映射对象
+        setUserMap(data);
         res.send(obj);
     })
 };
@@ -161,11 +164,11 @@ exports.post = function(req, res){
         console.log(payerId + "充值成功");
         
         //写入充值人的历史记录
-        var addUsername = getUsernameById(payerId);
+        var addUsername = userMap[payerId];;
         var addOptions = {
             'consume': options.consume,
             'remain': options.remain,
-            'date': new Date(),
+            'time': new Date().getTime(),
             'remark': '充值'
         };
         
@@ -190,16 +193,16 @@ exports.post = function(req, res){
                     if(err) {
                     }
                     console.log(id + "扣款成功");
+
+                    var minusUsername = userMap[id];
+                    var minusOptions = {
+                        'consume': options.consume,
+                        'remain': options.remain,
+                        'time': new Date().getTime(),
+                        'remark': '扣款'
+                    };
                     
-                        var minusUsername = getUsernameById(id);
-                        var minusOptions = {
-                            'consume': options.consume,
-                            'remain': options.remain,
-                            'date': new Date(),
-                            'remark': '扣款'
-                        };
-                        
-                        saveHistory (minusUsername, minusOptions);
+                    saveHistory (minusUsername, minusOptions);
                 })
             });
         }

@@ -30,8 +30,11 @@ exports.login = function(req, res) {
             obj.success = true;
             obj.message.username = data[0].username;
             req.session.username = data[0].username;
+            console.log(data[0].username + "登录成功！");
             res.send(obj);
-            return;
+        } else {
+            obj.success = false;
+            res.send(obj);
         }
     });
 };
