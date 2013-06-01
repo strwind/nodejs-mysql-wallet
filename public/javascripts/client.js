@@ -144,8 +144,8 @@
                         id = me.getCheckedValue(),
                         cash = $("#cash").val(),
                         remain = me.getCheckedRemain();
-                        payerId = me.getParamByName("id", $("#payer").val());
-                        payerRemain = me.getParamByName("remain", $("#payer").val());
+                        payerId = me.getValueByObj("id", {"name": $("#payer").val() });
+                        payerRemain = me.getValueByObj("remain", {"name": $("#payer").val() });
                         query = "type=" + type +
                                 "&idArr=" + id +
                                 "&cash=" + cash +
@@ -181,7 +181,8 @@
                              //console.log(data.result[0].date);
                              if(data.success) {
                                  $("#table").slideUp();
-                                 me.rendSingleTable(data);
+                                 var name = me.getValueByObj("name", {"username": username});
+                                 me.rendSingleTable(name, data);
                                  $("#single").slideDown();
                              }
                          }
@@ -235,18 +236,26 @@
                 return remainArr.join(",");
             },
             
-            getParamByName: function(key, name) {
+            //根据key和另一组键值对来获取value
+            getValueByObj: function(objAKey, objB) {
                 var me = this,
-                    param = null;
+                    objAvalue = null,
+                    objBKey = null,
+                    objBValue = null;
+                $.each(objB, function(m, n) {
+                    objBKey = m;
+                    objBValue = n;
+                });
+                    
                 $.each(me.currentData.result, function(index, item){
-                    if(item.name === name) {
-                        param = item[key];
+                    if(item[objBKey] === objBValue) {
+                        objAvalue = item[objAKey];
                         return;
                     }
                 });
-                return param;
+                return objAvalue;
             },
-            
+
             changeTableType: function(type, payerId) {
                 if(type == 1) {
                     this.setAllChecked(true);
@@ -296,7 +305,7 @@
                 me.changeTableType(data.message.type, data.message.payerId);
             },
             
-            rendSingleTable: function(data) {
+            rendSingleTable: function(name, data) {
                 var me = this,
                     itemArr = data.result.reverse(),
                     tbody = '';
@@ -308,7 +317,7 @@
                     tbody += me.getSingleRowHtml(item);
                 });
                 $("#single tbody").html(tbody);
-                $("#singleName").html(data.message.username);
+                $("#singleName").html(name);
             },
             
             parseTimeStamp: function(timeStamp) {
