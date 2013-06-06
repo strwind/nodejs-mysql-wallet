@@ -73,9 +73,10 @@ function getFootResult(result, idArr, payerId, type) {
     } 
     
     //如果是充值模式下 总额消费信息 、时间信息应该和充值的人保持一致
-    if(payerId && type === 2) {
+    if(payerId && type !== 1) {
         var index = getIndexFromListById(result, payerId);
-        foot.consume = "+" + parseFloat(result[index].consume);
+        var consume = parseFloat(result[index].consume);
+        foot.consume = (consume > 0) ? ('+' + consume) : consume;
         foot.time = result[index].time;
     }
     //保留一位小数
@@ -151,7 +152,13 @@ exports.post = function(req, res){
     idArr = idArr ? idArr.split(",") : [];
     remainArr = remainArr ? remainArr.split(",") : [];
     var len = idArr.length;
-    //充值模式
+    //充值模式 & 单人消费模式
+    
+    //单人消费
+    if (type === 3) {
+        cash = -cash;
+    }
+    
     var options = {
         'id' : payerId,
         'consume': cash,
@@ -161,7 +168,6 @@ exports.post = function(req, res){
     Finnace.update(options, function(err) {
         if(err) {
         }
-        console.log(payerId + "充值成功");
         
         //写入充值人的历史记录
         var addUsername = userMap[payerId];;
@@ -171,7 +177,10 @@ exports.post = function(req, res){
             'time': new Date().getTime(),
             'remark': '充值'
         };
-        
+        if(type === 3) {
+            addOptions.remark = "消费";
+        }
+        console.log(payerId + addOptions.remark + "成功");
         saveHistory (addUsername, addOptions);
         
         
@@ -192,14 +201,14 @@ exports.post = function(req, res){
                 Finnace.update(options, function(err) {
                     if(err) {
                     }
-                    console.log(id + "扣款成功");
+                    console.log(id + "消费成功");
 
                     var minusUsername = userMap[id];
                     var minusOptions = {
                         'consume': options.consume,
                         'remain': options.remain,
                         'time': new Date().getTime(),
-                        'remark': '扣款'
+                        'remark': '消费'
                     };
                     
                     saveHistory (minusUsername, minusOptions);

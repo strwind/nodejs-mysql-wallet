@@ -108,11 +108,18 @@
                          $("#cashLabel").html("付款总额(¥)：");
                          $("#oneKey").html("一键AA");
                          $("#oneKey").attr("data-type", "1");
-                     } else {
+                     } 
+                     else if (newKeyType == 2) {
                          $("#payerLabel").html("充值人：");
                          $("#cashLabel").html("充值额度(¥)：");
                          $("#oneKey").html("一键充值");
                          $("#oneKey").attr("data-type", "2")
+                     } 
+                     else if (newKeyType == 3) {
+                         $("#payerLabel").html("消费人：");
+                         $("#cashLabel").html("消费额度(¥)：");
+                         $("#oneKey").html("一键消费");
+                         $("#oneKey").attr("data-type", "3")
                      }
                      
                      //清空输入框
@@ -159,6 +166,7 @@
                         data: query,
                         success: function(data) {
                             me.currentData = data;
+                            $("#single").hide();
                             $("#table").hide();
                             me.rendIndexTbody(data);
                             $("#table").slideDown();
