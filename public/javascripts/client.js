@@ -19,9 +19,14 @@
                         me.currentData = data;
                         me.rendIndexTbody(data);
                         me.rendSelect(data);
+                        if (data.message.username) {
+                            me.afterLogin(data.message.username);
+                        }
+                        else {
+                            me.beforeLogin();
+                        }
                     }
                  });
-                 me.beforeLogin();
             },
             
             bindEvent: function () {
@@ -432,6 +437,7 @@
                 $("#login").html("登录");
                 $("#login").removeClass("disabled");
                 $("#loginBox").modal("hide");
+                $("#single").hide();
             }
         };
         

@@ -126,6 +126,7 @@ exports.index = function(req, res){
 
 exports.get = function(req, res){
     var query = req.body.id ? ("id=" + req.body.id) : null;
+    obj.message.username = req.session.username;
     Finnace.get(query, function(err, data) {
         obj.result = getFormatResult(data);
         obj.footResult = getFootResult(data);
